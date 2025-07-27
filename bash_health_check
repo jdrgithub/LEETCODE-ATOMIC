@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Function to display system performance snapshot
+print_system_health() {
+    echo "==== SYSTEM PERFORMANCE SNAPSHOT ===="
+
+    # System Uptime
+    echo -e "\nSystem Uptime:"
+    uptime -p
+
+    # CPU Usage
+    echo -e "\nCPU Usage:"
+    mpstat | grep -A 5 "%idle" | awk '{print "CPU Idle: "$12"%"}'
+
+    # Memory Usage
+    echo -e "\nMemory Usage:"
+    free -h | awk 'NR==2{printf "Used: %s / Total: %s (%.2f%%)\n", $3, $2, ($3/$2)*100}'
+
+    # Disk Usage
+    echo -e "\nDisk Usage:"
+    df -h --output=source,fstype,size,used,avail,pcent,target | grep -v tmpfs | column -t
+
+    # Network Traffic
+    echo -e "\nNetwork Traffic (Bytes):"
+    ip -s link | awk '/^[0-9]+:/ {print $2} /RX:/ {getline; print "  RX: "$1, " TX: "$9}'
+
+    # Top 3 Processes by CPU Usage
+    echo -e "\nTop 3 Processes by CPU Usage:"
+    ps -eo pid,comm,%cpu --sort=-%cpu | head -n 4 | column -t
+
+    # Top 3 Processes by Memory Usage
+    echo -e "\nTop 3 Processes by Memory Usage:"
+    ps -eo pid,comm,%mem --sort=-%mem | head -n 4 | column -t
+
+    echo -e "\n====================================="
+}
+
+# Run the health check
+print_system_health

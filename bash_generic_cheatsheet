@@ -1,0 +1,203 @@
+#!/bin/bash
+
+#################################################
+# Comprehensive Bash Scripting Cheat Sheet
+# This script covers:
+# - Variables, Constants, and Arrays
+# - Arithmetic Operations
+# - String Manipulation
+# - Conditionals and Comparisons
+# - Loops (for, while, until)
+# - Functions
+# - Input/Output and Redirection
+# - File Handling
+# - Error Handling
+# - Signals and Traps
+# - System Information Commands
+#################################################
+
+# 1. VARIABLES
+# Declare variables (no spaces around `=`)
+NAME="Bash Script"
+VERSION=1.0
+readonly SCRIPT_PATH=$(dirname "$0")
+
+# 2. CONSTANTS (Using `readonly` or `declare -r`)
+readonly MAX_RETRIES=3
+
+# 3. ARRAYS
+# Create an array and iterate through it
+SERVICES=("nginx" "mysql" "redis")
+echo "First service: ${SERVICES[0]}"
+for SERVICE in "${SERVICES[@]}"; do
+    echo "Service: $SERVICE"
+done
+
+# 4. ARITHMETIC OPERATIONS
+# Basic arithmetic operations using `expr` or `$(( ))`
+NUM1=10
+NUM2=5
+SUM=$((NUM1 + NUM2))
+DIFF=$((NUM1 - NUM2))
+echo "Sum: $SUM, Difference: $DIFF"
+
+# 5. STRING MANIPULATION
+STR="Hello, World!"
+echo "String Length: ${#STR}"
+echo "Substring: ${STR:7:5}"  # "World"
+
+# 6. CONDITIONAL STATEMENTS
+if [ $NUM1 -gt $NUM2 ]; then
+    echo "$NUM1 is greater than $NUM2"
+elif [ $NUM1 -eq $NUM2 ]; then
+    echo "$NUM1 is equal to $NUM2"
+else
+    echo "$NUM1 is less than $NUM2"
+fi
+
+# 7. COMPARISONS
+# String Comparisons
+STRING1="bash"
+STRING2="Bash"
+if [[ "$STRING1" == "$STRING2" ]]; then
+    echo "Strings are equal"
+else
+    echo "Strings are not equal"
+fi
+
+# Numeric Comparisons: -eq, -ne, -lt, -le, -gt, -ge
+if [ $NUM1 -ne $NUM2 ]; then
+    echo "$NUM1 is not equal to $NUM2"
+fi
+
+# 8. LOOPS
+# For Loop
+for i in {1..5}; do
+    echo "Iteration: $i"
+done
+
+# While Loop
+COUNT=1
+while [ $COUNT -le 3 ]; do
+    echo "Count: $COUNT"
+    ((COUNT++))
+done
+
+# Until Loop
+COUNT=3
+until [ $COUNT -lt 1 ]; do
+    echo "Count Down: $COUNT"
+    ((COUNT--))
+done
+
+# 9. FUNCTIONS
+function greet() {
+    local name=$1
+    echo "Hello, $name!"
+}
+greet "Jonathan"
+
+# 10. INPUT/OUTPUT AND REDIRECTION
+echo "This is a test" > output.txt  # Redirect output to file
+echo "Appending line" >> output.txt # Append to file
+cat < output.txt                    # Read from file
+
+# 11. ERROR HANDLING
+# Exit on error
+set -e
+cp /path/to/nonexistentfile /tmp/ || echo "Error copying file!"
+
+# Using exit status of last command
+mkdir /some/newdir
+if [[ $? -ne 0 ]]; then
+    echo "Failed to create directory!"
+fi
+
+# 12. SIGNAL HANDLING
+trap "echo 'Signal SIGINT received! Exiting...'; exit 1" SIGINT
+echo "Press Ctrl+C to trigger the trap."
+sleep 5
+
+# 13. FILE OPERATIONS
+# Check if a file exists
+FILE_NAME="/etc/passwd"
+if [ -e $FILE_NAME ]; then
+    echo "File $FILE_NAME exists."
+else
+    echo "File $FILE_NAME does not exist."
+fi
+
+# Reading a file line-by-line
+while IFS= read -r line; do
+    echo "Line: $line"
+done < $FILE_NAME
+
+# 14. GET SYSTEM INFORMATION
+echo "==== System Information ===="
+echo "Hostname: $(hostname)"
+echo "Kernel Version: $(uname -r)"
+echo "Uptime: $(uptime -p)"
+echo "Memory Usage:"
+free -h
+echo "Disk Usage:"
+df -h
+echo "Top Processes by Memory Usage:"
+ps -eo pid,comm,%mem --sort=-%mem | head -n 4
+
+# 15. GET USER INPUT
+read -p "Enter your username: " USER_NAME
+echo "Hello, $USER_NAME!"
+
+# 16. STRING PATTERN MATCHING WITH REGEX
+if [[ $STR =~ ^Hello ]]; then
+    echo "String starts with 'Hello'"
+fi
+
+# 17. FILE DESCRIPTORS AND REDIRECTION
+# Redirect stdout and stderr to a log file
+exec > script.log 2>&1
+echo "This will be logged."
+
+# 18. CHECK EXIT STATUS
+check_last_command() {
+    if [ $? -eq 0 ]; then
+        echo "Command succeeded."
+    else
+        echo "Command failed."
+    fi
+}
+touch /tmp/testfile
+check_last_command
+
+# 19. ENVIRONMENT VARIABLES
+echo "Home directory: $HOME"
+echo "Current Shell: $SHELL"
+echo "Script Path: $SCRIPT_PATH"
+
+# 20. FILE GLOBBING AND WILDCARDS
+for txt_file in *.txt; do
+    echo "Found text file: $txt_file"
+done
+
+# 21. LOGGING FUNCTION
+log_message() {
+    local message=$1
+    echo "$(date +'%Y-%m-%d %H:%M:%S') - $message" >> $LOG_FILE
+}
+log_message "Script execution started."
+
+# 22. EXIT CODES
+# Use meaningful exit codes
+if [[ -z $USER_NAME ]]; then
+    echo "No username provided!"
+    exit 1  # 1 indicates error
+else
+    echo "Welcome, $USER_NAME!"
+    exit 0  # 0 indicates success
+fi
+
+# 23. COMPOUND COMMANDS
+# Using `&&`, `||` to chain commands
+mkdir /tmp/mydir && echo "Directory created" || echo "Failed to create directory"
+
+echo "==== END OF SCRIPT ===="
